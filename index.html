@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XTRYSTORE - PS4 Digital Store</title>
+<style>
+:root {
+  --bg-dark: #08090d;
+  --panel: #10121a;
+  --panel-hover: #181b28;
+  --border: #222738;
+  --text-main: #ffffff;
+  --text-muted: #8e99b0;
+  --cyan-neon: #00f0ff;
+  --magenta-neon: #d900ff;
+  --cyan-glow: rgba(0, 240, 255, 0.35);
+  --magenta-glow: rgba(217, 0, 255, 0.35);
+  --green-ok: #00ff88;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+body {
+  background: var(--bg-dark);
+  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+button, input {
+  font: inherit;
+  color: inherit;
+  border: none;
+  outline: none;
+}
+
+/* HEADER */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(8, 9, 13, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+.top-bar {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.brand-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* MENU 3 TRACINHOS */
+.menu-btn {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.menu-btn:hover {
+  border-color: var(--cyan-neon);
+  box-shadow: 0 0 12px var(--cyan-glow);
+}
+
+.menu-btn span {
+  width: 20px;
+  height: 2px;
+  background: var(--text-main);
+  border-radius: 2px;
+}
+
+/* LOGO XTRYSTORE ESTILO NEON */
+.brand-title {
+  font-size: 1.35rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.brand-title .x-symbol {
+  background: linear-gradient(135deg, var(--cyan-neon) 0%, var(--magenta-neon) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-size: 1.6rem;
+  font-weight: 900;
+}
+
+.brand-title span.store-text {
+  color: var(--text-main);
+}
+
+.search-box {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  width: 280px;
+  transition: 0.2s;
+}
+
+.search-box:focus-within {
+  border-color: var(--magenta-neon);
+  box-shadow: 0 0 12px var(--magenta-glow);
+}
+
+.search-box input {
+  background: transparent;
+  width: 100%;
+  font-size: 0.9rem;
+}
+
+.search-box input::placeholder {
+  color: var(--text-muted);
+}
+
+/* SIDE DRAWER */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+  z-index: 90;
+  display: none;
+}
+
+.drawer-overlay.open {
+  display: block;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  left: -300px;
+  width: 280px;
+  height: 100%;
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  z-index: 100;
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.drawer.open {
+  left: 0;
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 14px;
+}
+
+.close-drawer {
+  background: transparent;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.drawer-menu {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.drawer-menu li button {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  padding: 12px;
+  border-radius: 8px;
+  color: var(--text-main);
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.drawer-menu li button:hover {
+  background: var(--panel-hover);
+  color: var(--cyan-neon);
+}
+
+/* HERO BANNER NEON */
+.hero {
+  background: radial-gradient(circle at 10% 20%, rgba(0,240,255,0.12), transparent 40%),
+              radial-gradient(circle at 90% 80%, rgba(217,0,255,0.12), transparent 40%),
+              var(--bg-dark);
+  border-bottom: 1px solid var(--border);
+  padding: 48px 20px;
+}
+
+.hero-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.hero .badge {
+  display: inline-block;
+  background: linear-gradient(90deg, var(--cyan-neon), var(--magenta-neon));
+  color: #000;
+  font-size: 0.75rem;
+  font-weight: 900;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+.hero h1 {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 10px;
+  background: linear-gradient(90deg, #ffffff, #a5b4fc);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero p {
+  color: var(--text-muted);
+  max-width: 520px;
+  font-size: 1rem;
+}
+
+/* MAIN CONTENT */
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px 20px 60px;
+  flex: 1;
+  width: 100%;
+}
+
+.section-label {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+}
+
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 22px;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  border-color: var(--cyan-neon);
+  box-shadow: 0 10px 25px var(--cyan-glow);
+}
+
+.card-cover {
+  width: 100%;
+  aspect-ratio: 3/4;
+  object-fit: cover;
+  display: block;
+  background: #000;
+}
+
+.card-meta {
+  padding: 14px;
+}
+
+.card-tag {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--green-ok);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.card-title {
+  font-weight: 700;
+  font-size: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-sub {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* MODAL DE DOWNLOAD */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 200;
+}
+
+.modal.open {
+  display: flex;
+}
+
+.modal-sheet {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  max-width: 820px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  position: relative;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--border);
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 1.3rem;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  min-height: 360px;
+  background: #000;
+}
+
+.modal-content {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow-y: auto;
+}
+
+.modal-header h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.modal-dev {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.download-tab {
+  background: var(--bg-dark);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 20px 0;
+}
+
+.tab-title {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--cyan-neon);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.spec-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.spec-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.88rem;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.spec-row:last-child {
+  border-bottom: none;
+}
+
+.spec-row span {
+  color: var(--text-muted);
+}
+
+.btn-download-primary {
+  background: linear-gradient(135deg, var(--cyan-neon) 0%, var(--magenta-neon) 100%);
+  color: #000;
+  border: none;
+  padding: 14px 20px;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: 900;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+  box-shadow: 0 6px 20px var(--magenta-glow);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-download-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px var(--cyan-glow);
+}
+
+.toast {
+  position: fixed;
+  bottom: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--panel);
+  border: 1px solid var(--magenta-neon);
+  color: var(--text-main);
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  z-index: 300;
+  transition: bottom 0.3s;
+}
+
+.toast.show {
+  bottom: 24px;
+}
+
+footer {
+  border-top: 1px solid var(--border);
+  padding: 24px 20px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+@media (max-width: 680px) {
+  .search-box { width: 160px; }
+  .modal-sheet { grid-template-columns: 1fr; }
+  .modal-cover { height: 220px; min-height: 0; }
+  .games-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+<div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
+
+<!-- MENU LATERAL -->
+<aside class="drawer" id="drawer">
+  <div class="drawer-header">
+    <h3>XTRYSTORE Menu</h3>
+    <button class="close-drawer" onclick="toggleDrawer()">&times;</button>
+  </div>
+  <ul class="drawer-menu">
+    <li><button onclick="showToast('Fila de downloads ativa: 0 itens')">📥 Meus Downloads</button></li>
+    <li><button onclick="showToast('Modo de instalação: Transfira o PKG para PenDrive em exFAT.')">📦 Como Instalar PKG</button></li>
+    <li><button onclick="showToast('GoldHEN Ativo / FW Compatível 9.00 - 11.00')">⚡ Status do Console</button></li>
+    <li><button onclick="showToast('Servidores operando em alta velocidade')">🌐 Servidor Archive.org</button></li>
+  </ul>
+</aside>
+
+<!-- HEADER -->
+<header>
+  <div class="top-bar">
+    <div class="brand-group">
+      <button class="menu-btn" onclick="toggleDrawer()" title="Opções">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="brand-title">
+        <span class="x-symbol">X</span><span class="store-text">TRYSTORE</span>
+      </div>
+    </div>
+    <div class="search-box">
+      <input type="search" id="searchInput" placeholder="Buscar jogo..." oninput="renderGames()">
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="badge">XTRYSTORE DIGITAL</div>
+    <h1>Catálogo FPKG PS4</h1>
+    <p>Baixe os melhores títulos em arquivo .PKG direto para o seu console.</p>
+  </div>
+</section>
+
+<!-- MAIN -->
+<main>
+  <div class="section-label" id="countLabel">Carregando catálogo...</div>
+  <div class="games-grid" id="gamesGrid"></div>
+</main>
+
+<!-- MODAL COM ABA DE DOWNLOAD -->
+<div class="modal" id="modal">
+  <div class="modal-sheet">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <img id="mCover" class="modal-cover">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="mTitle"></h2>
+        <div class="modal-dev" id="mDev"></div>
+      </div>
+
+      <div class="download-tab">
+        <div class="tab-title">📥 Aba de Download FPKG</div>
+        <div class="spec-grid">
+          <div class="spec-row"><span>Tamanho do Arquivo:</span><strong id="mSize"></strong></div>
+          <div class="spec-row"><span>Versão do Pacote:</span><strong id="mVersion"></strong></div>
+          <div class="spec-row"><span>Plataforma:</span><strong>PlayStation 4</strong></div>
+          <div class="spec-row"><span>Formato:</span><strong>.PKG Direct</strong></div>
+        </div>
+      </div>
+
+      <a id="mDownloadLink" class="btn-download-primary" href="#" target="_blank" download>
+        BAIXAR ARQUIVO .PKG
+      </a>
+    </div>
+  </div>
+</div>
+
+<footer>XTRYSTORE &copy; 2026. Todos os direitos reservados.</footer>
+
+<script>
+/* Banco de Dados usando o caminho local para o GitHub */
+const GAMES = [
+  {
+    id: "naruto-storm-4",
+    title: "NARUTO SHIPPUDEN: Ultimate Ninja STORM 4",
+    dev: "Bandai Namco Entertainment",
+    genre: "Luta / Ação",
+    year: 2016,
+    size: "38.5 GB",
+    version: "v1.11 FPKG",
+    cover: "./capas/naruto-storm-4.png", 
+    downloadUrl: "https://archive.org/download/ps4-fpkg-collection-english-n/NARUTO%20SHIPPUDEN%20Ultimate%20Ninja%20STORM%204%20-%20%5BUS%5D%20%5BEN%5D%20%5B1.11%5D.pkg"
+  }
+];
+
+const $ = id => document.getElementById(id);
+
+/* Gerador de Capa Fallback SVG com tema XTRYSTORE Neon */
+function generateFallbackCover(title) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="533" viewBox="0 0 400 533">
+    <defs>
+      <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#00f0ff"/>
+        <stop offset="100%" stop-color="#d900ff"/>
+      </linearGradient>
+    </defs>
+    <rect width="400" height="533" fill="#08090d"/>
+    <rect x="15" y="15" width="370" height="503" fill="none" stroke="url(#g)" stroke-width="3" rx="12"/>
+    <text x="200" y="240" font-family="sans-serif" font-size="28" font-weight="900" fill="#ffffff" text-anchor="middle">NARUTO STORM 4</text>
+    <text x="200" y="280" font-family="sans-serif" font-size="16" font-weight="800" fill="#00f0ff" text-anchor="middle">XTRYSTORE FPKG</text>
+  </svg>`;
+  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+}
+
+function loadImage(imgElement, game) {
+  imgElement.alt = "Capa " + game.title;
+  imgElement.onerror = () => {
+    imgElement.onerror = null;
+    imgElement.src = generateFallbackCover(game.title);
+  };
+  imgElement.src = game.cover;
+}
+
+function showToast(msg) {
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 3000);
+}
+
+function toggleDrawer() {
+  $("drawer").classList.toggle("open");
+  $("drawerOverlay").classList.toggle("open");
+}
+
+function renderGames() {
+  const query = $("searchInput").value.trim().toLowerCase();
+  const list = GAMES.filter(g => (g.title + " " + g.genre).toLowerCase().includes(query));
+  const grid = $("gamesGrid");
+  grid.innerHTML = "";
+  
+  $("countLabel").textContent = list.length + (list.length === 1 ? " Jogo Disponível" : " Jogos Disponíveis");
+
+  if (!list.length) {
+    grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px 0;">Nenhum jogo encontrado.</div>';
+    return;
+  }
+
+  list.forEach(g => {
+    const card = document.createElement("div");
+    card.className = "card";
+    
+    const img = document.createElement("img");
+    img.className = "card-cover";
+    loadImage(img, g);
+    
+    const meta = document.createElement("div");
+    meta.className = "card-meta";
+    meta.innerHTML = `
+      <div class="card-tag">GRÁTIS • FPKG</div>
+      <div class="card-title">${g.title}</div>
+      <div class="card-sub">${g.genre} • ${g.size}</div>
+    `;
+    
+    card.appendChild(img);
+    card.appendChild(meta);
+    card.onclick = () => openModal(g);
+    
+    grid.appendChild(card);
+  });
+}
+
+function openModal(game) {
+  loadImage($("mCover"), game);
+  $("mTitle").textContent = game.title;
+  $("mDev").textContent = game.dev + " (" + game.year + ")";
+  $("mSize").textContent = game.size;
+  $("mVersion").textContent = game.version;
+  $("mDownloadLink").href = game.downloadUrl;
+  $("modal").classList.add("open");
+}
+
+function closeModal() {
+  $("modal").classList.remove("open");
+}
+
+$("modal").onclick = e => { if (e.target.id === "modal") closeModal(); };
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+
+renderGames();
+</script>
+</body>
+  </html>
+  
